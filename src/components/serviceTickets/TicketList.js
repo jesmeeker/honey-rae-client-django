@@ -55,7 +55,7 @@ export const TicketList = () => {
         <div className="actions">{toShowOrNotToShowTheButton()}</div>
         <div className="activeTickets">{active}</div>
         <article className="tickets">
-            { tickets.map(ticket => <TicketCard key={`ticket--${ticket.id}`} ticket={ticket} toggle={toggle} />) }
+            { tickets.map(ticket => <TicketCard key={`ticket--${ticket.id}`} ticket={ticket} toggle={toggle} setOriginal={setOriginal}/>) }
         </article>
     </>
 }

@@ -40,7 +40,7 @@ export const Ticket = () => {
     }
 
     const updateTicket = (evt) => {
-        const updatedTicket = {...ticket, employee: parseInt(evt.target.value)}
+        const updatedTicket = {...ticket, employee: parseInt(evt.target.value), customer: parseInt(ticket.customer.id)}
 
         fetchIt(
             `http://localhost:8000/tickets/${ticketId}`,
