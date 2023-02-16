@@ -8,6 +8,7 @@ import "./Tickets.css"
 
 export const TicketList = () => {
     const [active, setActive] = useState("")
+    const [searchTerms, setSearchTerms] = useState("")
     const { toggle, setOriginal, condensed: tickets } = useCondensed({ limit: 40, field: "description" })
     const history = useHistory()
 
@@ -38,9 +39,35 @@ export const TicketList = () => {
                 onClick={() => history.push("/tickets/create")}>Create Ticket</button>
         }
     }
+    const handleSubmit = e => {
+        filterTickets(`search=${searchTerms}`)
+    };
+    
+    const handleKeypress = e => {
+          //it triggers by pressing the enter key
+        if (e.keyCode === 13) {
+            handleSubmit();
+        }
+    };
 
-    const filterTickets = (status) => {
-        fetchIt(`http://localhost:8000/tickets?status=${status}`)
+    const toShowOrNotToShowSearch = () => {
+        if (isStaff()) {
+            return <><input type="textfield" placeholder="Search Tickets"
+                onChange={(e) =>
+                    setSearchTerms(e.target.value)}
+                onKeyUp={handleKeypress}></input>
+                <button
+                    onClick={() =>
+                    filterTickets(`search=${searchTerms}`)}>Go</button>
+                </>
+        }
+        else {
+            return ""
+        }
+    }
+
+    const filterTickets = (filter) => {
+        fetchIt(`http://localhost:8000/tickets?${filter}`)
             .then((tickets) => {
                 setOriginal(tickets)
             })
@@ -49,8 +76,11 @@ export const TicketList = () => {
 
     return <>
         <div>
-            <button onClick={() => filterTickets("done")}>Show Done</button>
-            <button onClick={() => filterTickets("all")}>Show All</button>
+            <button onClick={() => filterTickets("status=done")}>Show Done</button>
+            <button onClick={() => filterTickets("status=all")}>Show All</button>
+            <button onClick={() => filterTickets("status=unclaimed")}>Show Unclaimed</button>
+            <button onClick={() => filterTickets("status=inprogress")}>Show In Progress</button>
+            <div className="actions">{toShowOrNotToShowSearch()}</div>
         </div>
         <div className="actions">{toShowOrNotToShowTheButton()}</div>
         <div className="activeTickets">{active}</div>
