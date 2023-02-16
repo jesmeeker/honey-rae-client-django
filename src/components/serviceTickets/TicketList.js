@@ -8,7 +8,7 @@ import "./Tickets.css"
 
 export const TicketList = () => {
     const [active, setActive] = useState("")
-    const [searchTerms, setSearchTerms] = useState("")
+    const [searchTerms, setSearchTerms] = useState("Search Tickets")
     const { toggle, setOriginal, condensed: tickets } = useCondensed({ limit: 40, field: "description" })
     const history = useHistory()
 
@@ -19,6 +19,10 @@ export const TicketList = () => {
             })
             .catch(() => setOriginal([]))
     }, [])
+
+    // useEffect(() => {
+    //     setSearchTerms()
+    // }, [tickets])
 
     useEffect(() => {
         const activeTicketCount = tickets.filter(t => t.date_completed === null).length
@@ -39,8 +43,12 @@ export const TicketList = () => {
                 onClick={() => history.push("/tickets/create")}>Create Ticket</button>
         }
     }
-    const handleSubmit = e => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         filterTickets(`search=${searchTerms}`)
+        setSearchTerms("Search Tickets")
+        document.getElementById("search").value = ""
+        
     };
     
     const handleKeypress = e => {
@@ -52,13 +60,14 @@ export const TicketList = () => {
 
     const toShowOrNotToShowSearch = () => {
         if (isStaff()) {
-            return <><input type="textfield" placeholder="Search Tickets"
+            return <><form><input type="textfield" placeholder={searchTerms}  id="search"
                 onChange={(e) =>
                     setSearchTerms(e.target.value)}
                 onKeyUp={handleKeypress}></input>
-                <button
-                    onClick={() =>
-                    filterTickets(`search=${searchTerms}`)}>Go</button>
+                <button type="submit"
+                    onClick={handleSubmit}
+                    >Go</button>
+                </form>
                 </>
         }
         else {
@@ -67,6 +76,8 @@ export const TicketList = () => {
     }
 
     const filterTickets = (filter) => {
+        // setSearchTerms("Search Tickets")
+        // toShowOrNotToShowSearch()
         fetchIt(`http://localhost:8000/tickets?${filter}`)
             .then((tickets) => {
                 setOriginal(tickets)
